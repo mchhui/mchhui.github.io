@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数学 on Hueihuea&#39;s blog | Welcome back, Pilot.</title>
+    <link>https://mchhui.github.io/tags/%E6%95%B0%E5%AD%A6/</link>
+    <description>Recent content in 数学 on Hueihuea&#39;s blog | Welcome back, Pilot.</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 16 Oct 2025 05:51:04 +0800</lastBuildDate>
+    <atom:link href="https://mchhui.github.io/tags/%E6%95%B0%E5%AD%A6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gcd辗转相除法证明</title>
+      <link>https://mchhui.github.io/post/gcd%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%E8%AF%81%E6%98%8E/</link>
+      <pubDate>Thu, 16 Oct 2025 05:51:04 +0800</pubDate>
+      <guid>https://mchhui.github.io/post/gcd%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%E8%AF%81%E6%98%8E/</guid>
+      <description>辗转相除法的证明，性质和程序实现</description>
+    </item>
+  </channel>
+</rss>

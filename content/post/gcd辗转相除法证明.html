@@ -1,0 +1,63 @@
++++
+date = '2025-10-16T05:51:04+08:00'
+draft = false
+title = 'Gcd辗转相除法证明'
+summary = '辗转相除法的证明，性质和程序实现'
+tags = ["算法","证明","数学"]
++++
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>学习笔记-辗转相除法</title>
+</head>
+<body><h1 id='最大的公约数的程序求法'>最大的公约数的程序求法</h1>
+<p>最大公约数简称gcd</p>
+<p>下为使用python的基于辗转相除法的gcd函数实现</p>
+<pre><code class='language-python' lang='python'>def gcd(a, b):
+  r = a % b
+  if(r==0):
+	return b
+  return gcd(b,r)
+</code></pre>
+<p>辗转相除法，又叫欧几里得算法，他的计算过程如上代码，不再赘述，下附其原理与证明。</p>
+<h3 id='原理与证明'>原理与证明</h3>
+<p>其计算原理依赖于下面的定理。</p>
+<p>定理：两个整数的最大公约数等于其中较小的那个数和两数相除余数的最大公约数。<a href='https://baike.baidu.com/item/最大公约数/0?fromModule=lemma_inlink'>最大公约数</a>（Greatest Common Divisor）缩写为<a href='https://baike.baidu.com/item/GCD/24166657?fromModule=lemma_inlink'>GCD</a>。</p>
+<p>gcd(a,b) = gcd(b,a mod b) (不妨设a＞b 且r=a mod b ,r不为0)</p>
+<h4 id='证法一'>证法一</h4>
+<p>a可以表示成a = kb + r（a，b，k，r皆为<strong>正整数</strong>，且b不为0），其中kb项是关联gcd(a,b)、gcd(b,r)的桥梁。</p>
+<p>①假设d是a、b的一个<a href='https://baike.baidu.com/item/公约数/1063409?fromModule=lemma_inlink'>公约数</a>，即a和b都可以被d<strong>整除</strong>，记a=ud，b=vd，则r = a - kb=(u-kv)d，显然d也是r的因子，那么d也是b、r的一个公约数。</p>
+<p>②同理，设e是b、r的一个<a href='https://baike.baidu.com/item/公约数/1063409?fromModule=lemma_inlink'>公约数</a>，记b=xe，r=ye，则a = kb+r=(kx+y)e，显然e也是a的因子，那么e也是a、b的一个公约数。</p>
+<p>取d=gcd(a,b)，e=gcd(b,r)，根据①：d是e的一个因子，设e=pd；同理根据②：e是d的一个因子，设d=qe。结合两点可知d=qpd，则qp=1，由于p、q均为正整数，所以p=q=1。进而可得d=e。</p>
+<p>综上论证，a、b和b、r具有相同的公约数，并且gcd(a,b)=gcd(b,r)。</p>
+<h4 id='证法二'>证法二</h4>
+<p>假设c = gcd(a,b),则存在m,n，使a = mc, b = nc;</p>
+<p>令r = a mod b，即存在k，使r = a-kb = mc - knc = (m-kn)c;</p>
+<p>故gcd(b,a mod b) = gcd(b,r) = gcd(nc,(m-kn)c) = gcd(n,m-kn)c;</p>
+<p>则c为b与a mod b的公约数;</p>
+<p>假设d = gcd(n,m-kn), 则存在x,y, 使n = xd, m-kn = yd; 故m = yd+kn = yd+kxd = (y+kx)d;</p>
+<p>故有a = mc = (y+kx)dc, b = nc = xdc; 可得 gcd(a,b) = gcd((y+kx)dc,xdc) = dc;</p>
+<p>由于gcd(a,b) = c, 故d = 1;</p>
+<p>即gcd(n,m-kn) = 1, 故可得gcd(b,a mod b) = c;</p>
+<p>故得证gcd(a,b) = gcd(b,a mod b).</p>
+<p><strong>注意:两种方法是有区别的。</strong></p>
+<h3 id='更相减损术的python实现'>更相减损术的python实现</h3>
+<pre><code class='language-python' lang='python'>def gcd(a, b):
+    # a&gt;b
+    if a &lt; b:
+        temp = a
+        a = b
+        b = temp
+    if(b==0):
+        return a
+    if a == b &lt;&lt; 1:
+        return b
+    return gcd(a - b, b)
+#要证明该算法的正确性也并不困难 只要证明gcd(a,b)=gcd(a,b-a)和当x-y=y时gcd(x,y)=y
+</code></pre>
+<h3 id='如何求gcdxyz'>如何求gcd(x,y,z)</h3>
+<p>直接说结论，总有gcd(x,y,z)=gcd(x,gcd(y,z))
+读者自证不难。</p>
+</body>
+</html>
