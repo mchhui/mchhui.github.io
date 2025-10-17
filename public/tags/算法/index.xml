@@ -6,8 +6,15 @@
     <description>Recent content in 算法 on Hueihuea&#39;s blog | Welcome back, Pilot.</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 16 Oct 2025 05:51:04 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 17 Oct 2025 19:07:42 +0800</lastBuildDate>
     <atom:link href="https://mchhui.github.io/tags/%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>二维和三维bresenham的简易数学推导</title>
+      <link>https://mchhui.github.io/post/%E4%BA%8C%E7%BB%B4%E5%92%8C%E4%B8%89%E7%BB%B4bresenham/</link>
+      <pubDate>Fri, 17 Oct 2025 19:07:42 +0800</pubDate>
+      <guid>https://mchhui.github.io/post/%E4%BA%8C%E7%BB%B4%E5%92%8C%E4%B8%89%E7%BB%B4bresenham/</guid>
+      <description>未附代码</description>
+    </item>
     <item>
       <title>Gcd辗转相除法证明</title>
       <link>https://mchhui.github.io/post/gcd%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%E8%AF%81%E6%98%8E/</link>
