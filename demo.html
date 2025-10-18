@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息板</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .form-group input[type="text"] {
+            display: inline-block;
+            width: calc(100% - 100px);
+            margin-right: 10px;
+        }
+        .form-group button {
+            display: inline-block;
+            width: 80px;
+        }
+        .messages {
+            margin-top: 30px;
+        }
+        .message {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .message-header {
+            font-weight: bold;
+            color: #333;
+        }
+        .message-content {
+            margin: 5px 0;
+        }
+        .message-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>消息板</h1>
+        
+        <!-- 添加消息表单 -->
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="cate">分类:</label>
+                <input type="text" id="cate" name="cate" placeholder="请输入分类名称">
+            </div>
+            
+            <div class="form-group">
+                <label for="user">用户名:</label>
+                <input type="text" id="user" name="user" placeholder="请输入用户名">
+            </div>
+            
+            <div class="form-group">
+                <label for="msg">消息内容:</label>
+                <textarea id="msg" name="msg" placeholder="请输入消息内容"></textarea>
+            </div>
+            
+            <button type="submit">发送消息</button>
+        </form>
+        
+        <div id="result"></div>
+        
+        <!-- 查看消息 -->
+        <div class="messages">
+            <h2>消息列表</h2>
+            <div class="form-group">
+                <label for="viewCate">输入分类查看:</label>
+                <input type="text" id="viewCate" placeholder="请输入分类名称">
+                <button type="button" onclick="loadMessages()">加载消息</button>
+            </div>
+            
+            <div id="messageList"></div>
+        </div>
+    </div>
+
+    <script>
+        console.log('index.html JavaScript 加载成功');
+        
+        // 发送消息
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('表单提交事件触发');
+            
+            const formData = new FormData(this);
+            console.log('FormData 创建成功');
+            
+            fetch('/msg', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('响应状态:', response.status);
+                return response.text();
+            })
+            .then(data => {
+                console.log('响应数据:', data);
+                document.getElementById('result').innerHTML = 
+                    '<div class="success">' + data + '</div>';
+                // 清空表单
+                this.reset();
+            })
+            .catch(error => {
+                console.error('发送错误:', error);
+                document.getElementById('result').innerHTML = 
+                    '<div class="error">发送失败: ' + error + '</div>';
+            });
+        });
+        
+        // 加载消息
+        function loadMessages() {
+            console.log('loadMessages 函数被调用');
+            const cate = document.getElementById('viewCate').value;
+            console.log('选择的分类:', cate);
+            
+            if (!cate) {
+                alert('请选择分类');
+                return;
+            }
+            
+            console.log('开始获取消息...');
+            fetch('/list?cate=' + encodeURIComponent(cate))
+            .then(response => {
+                console.log('获取响应状态:', response.status);
+                return response.text();
+            })
+            .then(data => {
+                console.log('获取响应数据:', data);
+                try {
+                    const messages = JSON.parse(data);
+                    console.log('解析成功:', messages);
+                    displayMessages(messages);
+                } catch (error) {
+                    console.error('JSON解析错误:', error);
+                    document.getElementById('messageList').innerHTML = 
+                        '<div class="error">加载失败: ' + error + '</div>';
+                }
+            })
+            .catch(error => {
+                console.error('获取错误:', error);
+                document.getElementById('messageList').innerHTML = 
+                    '<div class="error">加载失败: ' + error + '</div>';
+            });
+        }
+        
+        // 显示消息
+        function displayMessages(messages) {
+            console.log('displayMessages 被调用，数据:', messages);
+            const messageList = document.getElementById('messageList');
+            
+            // 修复：使用正确的大写字段名
+            if (!messages.Msgs || messages.Msgs.length === 0) {
+                console.log('没有消息');
+                messageList.innerHTML = '<p>暂无消息</p>';
+                return;
+            }
+            
+            console.log('消息数量:', messages.Msgs.length);
+            let html = '';
+            messages.Msgs.forEach(msg => {
+                console.log('处理消息:', msg);
+                html += `
+                    <div class="message">
+                        <div class="message-header">${msg.User || '匿名用户'}</div>
+                        <div class="message-content">${msg.Msg}</div>
+                        <div class="message-meta">
+                            分类: ${msg.Cate} | 时间: ${msg.Time} | IP: ${msg.IP}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            console.log('生成的HTML:', html);
+            messageList.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

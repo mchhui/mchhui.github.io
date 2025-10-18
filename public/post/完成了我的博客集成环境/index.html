@@ -235,6 +235,526 @@
 <link rel="stylesheet" href='https://mchhui.github.io/css/toc.css' />
 
   
+<div class="comment-section">
+    <h3 class="comment-title">评论区</h3>
+    
+    
+    <div class="comment-form">
+        <form id="commentForm">
+            <div class="form-group">
+                <label for="commentUser">用户名:</label>
+                <input type="text" id="commentUser" name="user" placeholder="请输入您的用户名" maxlength="50" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="commentMsg">评论内容:</label>
+                <textarea id="commentMsg" name="msg" placeholder="请输入您的评论内容" maxlength="1000" required></textarea>
+            </div>
+            
+            <button type="submit">发表评论</button>
+        </form>
+        
+        <div id="commentResult"></div>
+    </div>
+    
+    
+    <div class="comments-list">
+        <h4 class="comments-title">评论列表</h4>
+        <div id="commentList">
+            <p class="loading-text">正在加载评论...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+
+function generateTitleHash(title) {
+    let hash = 0;
+    if (title.length === 0) return hash.toString();
+    for (let i = 0; i < title.length; i++) {
+        const char = title.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; 
+    }
+    return Math.abs(hash).toString();
+}
+
+
+const articleTitle = "完成了我的博客集成环境";
+const categoryHash = generateTitleHash(articleTitle);
+const apiBaseUrl = "http:\/\/localhost:1066";
+
+console.log('文章标题:', articleTitle);
+console.log('分类Hash:', categoryHash);
+console.log('API基础URL:', apiBaseUrl);
+
+
+if (!apiBaseUrl || apiBaseUrl === '') {
+    console.error('评论系统API基础URL未配置');
+    document.getElementById('commentList').innerHTML = 
+        '<div style="color: red;">评论系统配置错误：API基础URL未设置</div>';
+}
+
+
+function validateInput(user, msg) {
+    const errors = [];
+    
+    
+    if (!user || user.trim().length === 0) {
+        errors.push('用户名不能为空');
+    } else if (user.length > 50) {
+        errors.push('用户名不能超过50个字符');
+    }
+    
+    
+    if (!msg || msg.trim().length === 0) {
+        errors.push('评论内容不能为空');
+    } else if (msg.length > 1000) {
+        errors.push('评论内容不能超过1000个字符');
+    }
+    
+    
+    const dangerousPatterns = [
+        /\x3Cscript/i,
+        /javascript:/i,
+        /on\w+\s*=/i,
+        /<iframe/i,
+        /<object/i,
+        /<embed/i
+    ];
+    
+    const allText = user + msg;
+    for (const pattern of dangerousPatterns) {
+        if (pattern.test(allText)) {
+            errors.push('输入内容包含不允许的字符');
+            break;
+        }
+    }
+    
+    return errors;
+}
+
+
+document.getElementById('commentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log('评论表单提交事件触发');
+    
+    const user = document.getElementById('commentUser').value.trim();
+    const msg = document.getElementById('commentMsg').value.trim();
+    
+    
+    const validationErrors = validateInput(user, msg);
+    if (validationErrors.length > 0) {
+        document.getElementById('commentResult').innerHTML = 
+            '<div class="error">' + validationErrors.join('<br>') + '</div>';
+        return;
+    }
+    
+    const formData = new FormData(this);
+    formData.append('cate', categoryHash); 
+    
+    console.log('FormData 创建成功，分类:', categoryHash);
+    
+    fetch(apiBaseUrl + '/msg', {
+        method: 'POST',
+        body: formData,
+        mode: 'cors',
+        credentials: 'omit'
+    })
+    .then(response => {
+        console.log('响应状态:', response.status);
+        return response.text();
+    })
+    .then(data => {
+        console.log('响应数据:', data);
+        document.getElementById('commentResult').innerHTML = 
+            '<div style="color: green; margin-top: 10px;">' + data + '</div>';
+        
+        this.reset();
+        
+        loadComments();
+    })
+    .catch(error => {
+        console.error('发送错误:', error);
+        let errorMsg = '发送失败: ' + error;
+        if (error.name === 'TypeError' && error.message.includes('CORS')) {
+            errorMsg = '跨域请求被阻止，请检查后端CORS配置或使用代理';
+        }
+        document.getElementById('commentResult').innerHTML = 
+            '<div style="color: red; margin-top: 10px;">' + errorMsg + '</div>';
+    });
+});
+
+
+function loadComments() {
+    console.log('loadComments 函数被调用，分类:', categoryHash);
+    
+    fetch(apiBaseUrl + '/list?cate=' + encodeURIComponent(categoryHash), {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit'
+    })
+    .then(response => {
+        console.log('获取响应状态:', response.status);
+        return response.text();
+    })
+    .then(data => {
+        console.log('获取响应数据:', data);
+        try {
+            const messages = JSON.parse(data);
+            console.log('解析成功:', messages);
+            displayComments(messages);
+        } catch (error) {
+            console.error('JSON解析错误:', error);
+            document.getElementById('commentList').innerHTML = 
+                '<div style="color: red;">加载失败: ' + error + '</div>';
+        }
+    })
+    .catch(error => {
+        console.error('获取错误:', error);
+        let errorMsg = '加载失败: ' + error;
+        if (error.name === 'TypeError' && error.message.includes('CORS')) {
+            errorMsg = '跨域请求被阻止，请检查后端CORS配置或使用代理';
+        }
+        document.getElementById('commentList').innerHTML = 
+            '<div style="color: red;">' + errorMsg + '</div>';
+    });
+}
+
+
+function displayComments(messages) {
+    console.log('displayComments 被调用，数据:', messages);
+    const commentList = document.getElementById('commentList');
+    
+    if (!messages.Msgs || messages.Msgs.length === 0) {
+        console.log('没有评论');
+        commentList.innerHTML = '<p class="no-comments">暂无评论，快来抢沙发吧！</p>';
+        return;
+    }
+    
+    console.log('评论数量:', messages.Msgs.length);
+    let html = '';
+    
+    
+    const sortedMessages = messages.Msgs.sort((a, b) => {
+        
+        return new Date(b.Time) - new Date(a.Time);
+    });
+    
+    sortedMessages.forEach(msg => {
+        console.log('处理评论:', msg);
+        
+        const safeUser = escapeHtml(msg.User || '匿名用户');
+        const safeTime = escapeHtml(msg.Time || '');
+        const safeMsg = escapeHtml(msg.Msg || '');
+        const safeIP = escapeHtml(msg.IP || '');
+        
+        html += `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-user">${safeUser}</span>
+                    <span class="comment-time">${safeTime}</span>
+                </div>
+                <div class="comment-content">${safeMsg}</div>
+                <div class="comment-meta">IP: ${safeIP}</div>
+            </div>
+        `;
+    });
+    
+    console.log('生成的HTML:', html);
+    commentList.innerHTML = html;
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('页面加载完成，开始加载评论');
+    loadComments();
+});
+</script>
+
+<style>
+ 
+.comment-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+ 
+[data-color-mode=dark] .comment-section {
+    background-color: #21262d;
+    border: 1px solid #30363d;
+}
+
+.comment-title {
+    color: #24292f;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #d0d7de;
+    padding-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+[data-color-mode=dark] .comment-title {
+    color: #f0f6fc;
+    border-bottom-color: #30363d;
+}
+
+ 
+.comment-form {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #24292f;
+}
+
+[data-color-mode=dark] .form-group label {
+    color: #f0f6fc;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #24292f;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[data-color-mode=dark] .form-group input,
+[data-color-mode=dark] .form-group textarea {
+    background-color: #0d1117;
+    border-color: #30363d;
+    color: #f0f6fc;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0969da;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+}
+
+[data-color-mode=dark] .form-group input:focus,
+[data-color-mode=dark] .form-group textarea:focus {
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
+}
+
+.form-group textarea {
+    height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+button[type="submit"] {
+    background-color: #24292f;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+[data-color-mode=dark] button[type="submit"] {
+    background-color: #f0f6fc;
+    color: #24292f;
+}
+
+button[type="submit"]:hover {
+    background-color: #1a1e22;
+}
+
+[data-color-mode=dark] button[type="submit"]:hover {
+    background-color: #e6edf0;
+}
+
+ 
+.comments-title {
+    color: #24292f;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+[data-color-mode=dark] .comments-title {
+    color: #f0f6fc;
+}
+
+.loading-text,
+.no-comments {
+    color: #656d76;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+[data-color-mode=dark] .loading-text,
+[data-color-mode=dark] .no-comments {
+    color: #8b949e;
+}
+
+ 
+.comment-item {
+    background-color: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+[data-color-mode=dark] .comment-item {
+    background-color: #0d1117;
+    border-color: #30363d;
+}
+
+.comment-item:hover {
+    border-color: #0969da;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-color-mode=dark] .comment-item:hover {
+    border-color: #1f6feb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment-user {
+    font-weight: 600;
+    color: #24292f;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] .comment-user {
+    color: #f0f6fc;
+}
+
+.comment-time {
+    font-size: 12px;
+    color: #656d76;
+}
+
+[data-color-mode=dark] .comment-time {
+    color: #8b949e;
+}
+
+.comment-content {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #24292f;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] .comment-content {
+    color: #f0f6fc;
+}
+
+.comment-meta {
+    font-size: 11px;
+    color: #656d76;
+    border-top: 1px solid #d0d7de;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+[data-color-mode=dark] .comment-meta {
+    color: #8b949e;
+    border-top-color: #30363d;
+}
+
+ 
+#commentResult {
+    margin-top: 10px;
+}
+
+#commentResult .success {
+    color: #1a7f37;
+    background-color: #dafbe1;
+    border: 1px solid #a2dfa7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] #commentResult .success {
+    color: #7ee787;
+    background-color: #033a16;
+    border-color: #238636;
+}
+
+#commentResult .error {
+    color: #cf222e;
+    background-color: #ffebe9;
+    border: 1px solid #ffc1cc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] #commentResult .error {
+    color: #f85149;
+    background-color: #67060c;
+    border-color: #da3633;
+}
+
+ 
+@media (max-width: 768px) {
+    .comment-section {
+        margin: 20px 10px;
+        padding: 15px;
+        max-width: none;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .comment-time {
+        font-size: 11px;
+    }
+}
+</style>
+
+
 </div>
 
   <div class="footer container-xl width-full p-responsive">

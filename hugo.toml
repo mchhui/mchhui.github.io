@@ -16,3 +16,8 @@ theme = 'github-style'
   avatar = "/images/avatar.png"
   headerIcon = "/images/github-mark-white.png"
   location = "China"
+  
+  # 评论系统配置
+  [params.comments]
+  enabled = true
+  apiBaseUrl = "http://localhost:1066"  # 后端API基础URL，可根据需要修改
