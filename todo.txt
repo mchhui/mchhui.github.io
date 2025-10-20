@@ -1,3 +1,0 @@
-参考demo.html中的请求 我想为我的博客实现评论功能
-你应该通过在layouts\partials中新建html来实现评论
-具体的请求方案如下 只有post文章尾部有评论区 评论的cate就是post的title的hash 用户名和消息都由评论者决定
