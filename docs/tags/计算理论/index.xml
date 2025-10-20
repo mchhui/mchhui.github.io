@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>计算理论 on Hueihuea&#39;s blog | Welcome back, Pilot.</title>
+    <link>https://mchhui.github.io/tags/%E8%AE%A1%E7%AE%97%E7%90%86%E8%AE%BA/</link>
+    <description>Recent content in 计算理论 on Hueihuea&#39;s blog | Welcome back, Pilot.</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 20 Oct 2025 08:08:28 +0800</lastBuildDate>
+    <atom:link href="https://mchhui.github.io/tags/%E8%AE%A1%E7%AE%97%E7%90%86%E8%AE%BA/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>关于递归是否都能写成循环及其性能问题的回答</title>
+      <link>https://mchhui.github.io/post/%E5%85%B3%E4%BA%8E%E9%80%92%E5%BD%92%E6%98%AF%E5%90%A6%E9%83%BD%E8%83%BD%E5%86%99%E6%88%90%E5%BE%AA%E7%8E%AF%E5%8F%8A%E5%85%B6%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98%E7%9A%84%E5%9B%9E%E7%AD%94/</link>
+      <pubDate>Mon, 20 Oct 2025 08:08:28 +0800</pubDate>
+      <guid>https://mchhui.github.io/post/%E5%85%B3%E4%BA%8E%E9%80%92%E5%BD%92%E6%98%AF%E5%90%A6%E9%83%BD%E8%83%BD%E5%86%99%E6%88%90%E5%BE%AA%E7%8E%AF%E5%8F%8A%E5%85%B6%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98%E7%9A%84%E5%9B%9E%E7%AD%94/</guid>
+      <description>所有递归都可以写成循环,循环通常优于递归</description>
+    </item>
+  </channel>
+</rss>
