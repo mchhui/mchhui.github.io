@@ -6,8 +6,15 @@
     <description>Recent content in 图形学 on Hueihuea&#39;s blog | Welcome back, Pilot.</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 18 Oct 2025 13:06:42 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 23 Oct 2025 05:47:06 +0800</lastBuildDate>
     <atom:link href="https://mchhui.github.io/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>边函数设计和内外检测函数设计</title>
+      <link>https://mchhui.github.io/post/%E8%BE%B9%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%86%85%E5%A4%96%E6%A3%80%E6%B5%8B%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1_/</link>
+      <pubDate>Thu, 23 Oct 2025 05:47:06 +0800</pubDate>
+      <guid>https://mchhui.github.io/post/%E8%BE%B9%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%86%85%E5%A4%96%E6%A3%80%E6%B5%8B%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1_/</guid>
+      <description>推导了边函数并以此设计内外检查函数的代码</description>
+    </item>
     <item>
       <title>计算机图形学故事：固定管线这个名字是怎么来的？</title>
       <link>https://mchhui.github.io/post/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%85%E4%BA%8B%E5%9B%BA%E5%AE%9A%E7%AE%A1%E7%BA%BF%E8%BF%99%E4%B8%AA%E5%90%8D%E5%AD%97%E6%98%AF%E6%80%8E%E4%B9%88%E6%9D%A5%E7%9A%84/</link>

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="application/javascript" src='http://localhost:1313/js/theme-mode.js'></script>
+    <link rel="stylesheet" href='http://localhost:1313/css/frameworks.min.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/github.min.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/github-style.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/light.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/dark.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/syntax.css' />
+    <title> - Hueihuea&#39;s blog | Welcome back, Pilot.</title>
+    
+    <link rel="icon" type="image/x-icon" href='/images/ico.png'>
+    
+    <meta name="theme-color" content="#1e2327">
+
+    
+    
+
+    
+    <meta name="description"
+  content="基于上周对《重心计算》的学习，想到可以用有向面积设计内外检测函数。 花费十分钟了解向量积定义后，注意到
+用一个$起点A$和一个$终点B$来构造一个$边向量\vec{AB}(x_1,y_1,z_1)$ 现有一个$点P$ 若想判断$点P$在$边向量\vec{AB}$的什么方向上 只要先计算得$\vec{AP}(x_2,y_2,z_2)$,然后再计算$\vec{C}$ $$ \vec{C}=&amp;\vec{AB} \times \vec{AP}\ \vec{C}=&amp;(y_1z_2-y_2z_1,x_2z_1-x_2z_1,x_1y_2-x_1y_2)\ $$ 这样子就成功把$点P$和$边AB$的方向量化了
+学习内外检测函数知识并思考发现，如果用$\vec{AB},\vec{BC},\vec{CA}$来构造一个$\triangle{ABC}$，那么 $$ \because \vec{AB}\times\vec{AP},\vec{BC}\times\vec{BP},\vec{CA}\times\vec{CP}拥有相同的方向\ 结合SAT定理\ \therefore P在\triangle{ABC}内部 \iff (\vec{AB}\times\vec{AP})\cdot(\vec{BC}\times\vec{BP})&gt;0且(\vec{AB}\times\vec{AP})\cdot(\vec{CA}\times\vec{CP})&gt;0\ $$ 据此可以设计内外函数了。
+出于时间考虑，编码的思维过程来不及写了，直接贴出最后用上的代码
+/** * 三角形图元 * @param {vec3} pos1 三角形顶点1 * @param {vec3} pos2 三角形顶点2 * @param {vec3} pos3 三角形顶点3 */ function Primitive(pos1, pos2, pos3) { this.calcNormal = function () { var v12 = vec3.sub(vec3.create(), this.pos2, this.pos1); var v13 = vec3.sub(vec3.create(), this.pos3, this.pos1); return vec3.cross(vec3.create(), v12, v13); } /** * 判断点是否在三角形内 * 尽管可能有性能问题 但是为了语义清晰 使用面向对象 * @param {*} vec */ this.inside = (x, y) =&gt; { var vec = vec3.fromValues(x, y, 0); var v12 = vec3.sub(vec3.create(), this.pos2, this.pos1); var v23 = vec3.sub(vec3.create(), this.pos3, this.pos2); var v31 = vec3.sub(vec3.create(), this.pos1, this.pos3); var v1p = vec3.sub(vec3.create(), vec, this.pos1); var v2p = vec3.sub(vec3.create(), vec, this.pos2); var v3p = vec3.sub(vec3.create(), vec, this.pos3); var cross1 = vec3.cross(vec3.create(), v12, v1p); var cross2 = vec3.cross(vec3.create(), v23, v2p); var cross3 = vec3.cross(vec3.create(), v31, v3p); return vec3.dot(cross1, cross2) &gt; 0 &amp;&amp; vec3.dot(cross1, cross3) &gt; 0; } this.pos1 = pos1; this.pos2 = pos2; this.pos3 = pos3; this.normal = this.calcNormal(); } " />
+<meta name="keywords"
+  content='我的世界,minecraft,编程,计算,图形学,渲染,算法,证明' />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="http://localhost:1313/post/%E8%BE%B9%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%86%85%E5%A4%96%E6%A3%80%E6%B5%8B%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1/" />
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content=" - Hueihuea&#39;s blog | Welcome back, Pilot." />
+<meta name="twitter:description"
+  content="基于上周对《重心计算》的学习，想到可以用有向面积设计内外检测函数。 花费十分钟了解向量积定义后，注意到
+用一个$起点A$和一个$终点B$来构造一个$边向量\vec{AB}(x_1,y_1,z_1)$ 现有一个$点P$ 若想判断$点P$在$边向量\vec{AB}$的什么方向上 只要先计算得$\vec{AP}(x_2,y_2,z_2)$,然后再计算$\vec{C}$ $$ \vec{C}=&amp;\vec{AB} \times \vec{AP}\ \vec{C}=&amp;(y_1z_2-y_2z_1,x_2z_1-x_2z_1,x_1y_2-x_1y_2)\ $$ 这样子就成功把$点P$和$边AB$的方向量化了
+学习内外检测函数知识并思考发现，如果用$\vec{AB},\vec{BC},\vec{CA}$来构造一个$\triangle{ABC}$，那么 $$ \because \vec{AB}\times\vec{AP},\vec{BC}\times\vec{BP},\vec{CA}\times\vec{CP}拥有相同的方向\ 结合SAT定理\ \therefore P在\triangle{ABC}内部 \iff (\vec{AB}\times\vec{AP})\cdot(\vec{BC}\times\vec{BP})&gt;0且(\vec{AB}\times\vec{AP})\cdot(\vec{CA}\times\vec{CP})&gt;0\ $$ 据此可以设计内外函数了。
+出于时间考虑，编码的思维过程来不及写了，直接贴出最后用上的代码
+/** * 三角形图元 * @param {vec3} pos1 三角形顶点1 * @param {vec3} pos2 三角形顶点2 * @param {vec3} pos3 三角形顶点3 */ function Primitive(pos1, pos2, pos3) { this.calcNormal = function () { var v12 = vec3.sub(vec3.create(), this.pos2, this.pos1); var v13 = vec3.sub(vec3.create(), this.pos3, this.pos1); return vec3.cross(vec3.create(), v12, v13); } /** * 判断点是否在三角形内 * 尽管可能有性能问题 但是为了语义清晰 使用面向对象 * @param {*} vec */ this.inside = (x, y) =&gt; { var vec = vec3.fromValues(x, y, 0); var v12 = vec3.sub(vec3.create(), this.pos2, this.pos1); var v23 = vec3.sub(vec3.create(), this.pos3, this.pos2); var v31 = vec3.sub(vec3.create(), this.pos1, this.pos3); var v1p = vec3.sub(vec3.create(), vec, this.pos1); var v2p = vec3.sub(vec3.create(), vec, this.pos2); var v3p = vec3.sub(vec3.create(), vec, this.pos3); var cross1 = vec3.cross(vec3.create(), v12, v1p); var cross2 = vec3.cross(vec3.create(), v23, v2p); var cross3 = vec3.cross(vec3.create(), v31, v3p); return vec3.dot(cross1, cross2) &gt; 0 &amp;&amp; vec3.dot(cross1, cross3) &gt; 0; } this.pos1 = pos1; this.pos2 = pos2; this.pos3 = pos3; this.normal = this.calcNormal(); } " />
+<meta name="twitter:site" content="http://localhost:1313/" />
+<meta name="twitter:creator" content="" />
+<meta name="twitter:image"
+  content="http://localhost:1313/">
+
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content=" - Hueihuea&#39;s blog | Welcome back, Pilot.">
+<meta property="og:description"
+  content="基于上周对《重心计算》的学习，想到可以用有向面积设计内外检测函数。 花费十分钟了解向量积定义后，注意到
+用一个$起点A$和一个$终点B$来构造一个$边向量\vec{AB}(x_1,y_1,z_1)$ 现有一个$点P$ 若想判断$点P$在$边向量\vec{AB}$的什么方向上 只要先计算得$\vec{AP}(x_2,y_2,z_2)$,然后再计算$\vec{C}$ $$ \vec{C}=&amp;\vec{AB} \times \vec{AP}\ \vec{C}=&amp;(y_1z_2-y_2z_1,x_2z_1-x_2z_1,x_1y_2-x_1y_2)\ $$ 这样子就成功把$点P$和$边AB$的方向量化了
+学习内外检测函数知识并思考发现，如果用$\vec{AB},\vec{BC},\vec{CA}$来构造一个$\triangle{ABC}$，那么 $$ \because \vec{AB}\times\vec{AP},\vec{BC}\times\vec{BP},\vec{CA}\times\vec{CP}拥有相同的方向\ 结合SAT定理\ \therefore P在\triangle{ABC}内部 \iff (\vec{AB}\times\vec{AP})\cdot(\vec{BC}\times\vec{BP})&gt;0且(\vec{AB}\times\vec{AP})\cdot(\vec{CA}\times\vec{CP})&gt;0\ $$ 据此可以设计内外函数了。
+出于时间考虑，编码的思维过程来不及写了，直接贴出最后用上的代码
+/** * 三角形图元 * @param {vec3} pos1 三角形顶点1 * @param {vec3} pos2 三角形顶点2 * @param {vec3} pos3 三角形顶点3 */ function Primitive(pos1, pos2, pos3) { this.calcNormal = function () { var v12 = vec3.sub(vec3.create(), this.pos2, this.pos1); var v13 = vec3.sub(vec3.create(), this.pos3, this.pos1); return vec3.cross(vec3.create(), v12, v13); } /** * 判断点是否在三角形内 * 尽管可能有性能问题 但是为了语义清晰 使用面向对象 * @param {*} vec */ this.inside = (x, y) =&gt; { var vec = vec3.fromValues(x, y, 0); var v12 = vec3.sub(vec3.create(), this.pos2, this.pos1); var v23 = vec3.sub(vec3.create(), this.pos3, this.pos2); var v31 = vec3.sub(vec3.create(), this.pos1, this.pos3); var v1p = vec3.sub(vec3.create(), vec, this.pos1); var v2p = vec3.sub(vec3.create(), vec, this.pos2); var v3p = vec3.sub(vec3.create(), vec, this.pos3); var cross1 = vec3.cross(vec3.create(), v12, v1p); var cross2 = vec3.cross(vec3.create(), v23, v2p); var cross3 = vec3.cross(vec3.create(), v31, v3p); return vec3.dot(cross1, cross2) &gt; 0 &amp;&amp; vec3.dot(cross1, cross3) &gt; 0; } this.pos1 = pos1; this.pos2 = pos2; this.pos3 = pos3; this.normal = this.calcNormal(); } " />
+<meta property="og:url" content="http://localhost:1313/post/%E8%BE%B9%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%86%85%E5%A4%96%E6%A3%80%E6%B5%8B%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1/" />
+<meta property="og:site_name" content="" />
+<meta property="og:image"
+  content="http://localhost:1313/">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+<body>
+  <div style="position: relative">
+  <header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on">
+    <div class="Header-item mobile-none" style="margin-top: -4px; margin-bottom: -4px;">
+      <a class="Header-link" href="http://localhost:1313/">
+        <img class="octicon" height="32" width="32" src="/images/github-mark-white.png">
+      </a>
+    </div>
+    <div class="Header-item d-md-none">
+      <button class="Header-link btn-link js-details-target" type="button"
+        onclick="document.querySelector('#header-search').style.display = document.querySelector('#header-search').style.display == 'none'? 'block': 'none'">
+        <svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" version="1.1" width="24">
+          <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 7.75zM1.75 12a.75.75 0 100 1.5h12.5a.75.75 0 100-1.5H1.75z">
+          </path>
+        </svg>
+      </button>
+    </div>
+    <div style="display: none;" id="header-search"
+      class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex">
+      <div
+        class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to">
+        <div class="position-relative">
+          
+          <form target="_blank" action="https://www.baidu.com/s" accept-charset="UTF-8" method="get"
+            autocomplete="off">
+            <label
+              class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center">
+              <input type="text"
+                class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable"
+                name="wd" value="" placeholder="Search" autocomplete="off">
+              <input type="hidden" name="si" value="site:http://localhost:1313/">
+            </label>
+          </form>
+          
+        </div>
+      </div>
+    </div>
+
+    <div class="Header-item Header-item--full flex-justify-center d-md-none position-relative">
+      <a class="Header-link " href="http://localhost:1313/">
+        <img class="octicon octicon-mark-github v-align-middle" height="32" width="32" src="/images/github-mark-white.png">
+      </a>
+    </div>
+    <div class="Header-item" style="margin-right: 0;">
+      <a href="javascript:void(0)" class="Header-link no-select" onclick="switchTheme()">
+        <svg style="fill: var(--color-profile-color-modes-toggle-moon);" class="no-select" viewBox="0 0 16 16"
+          version="1.1" width="16" height="16">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M4.52208 7.71754C7.5782 7.71754 10.0557 5.24006 10.0557 2.18394C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961C9.95801 1.07727 10.3495 0.771159 10.6474 0.99992C12.1153 2.12716 13.0615 3.89999 13.0615 5.89383C13.0615 9.29958 10.3006 12.0605 6.89485 12.0605C3.95334 12.0605 1.49286 10.001 0.876728 7.24527C0.794841 6.87902 1.23668 6.65289 1.55321 6.85451C2.41106 7.40095 3.4296 7.71754 4.52208 7.71754Z">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </header>
+</div>
+  <div id="search-result" class="container-lg px-3 new-discussion-timeline" style="display: none;">
+</div>
+
+  
+<div class="application-main">
+  <div>
+  <main>
+    <div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4">
+      <div class="px-0">
+        <div class="mb-3 d-flex px-3 px-md-3 px-lg-5">
+          <div class="flex-auto min-width-0 width-fit mr-3">
+            <div class="d-flex">
+              <div class="d-none d-md-block">
+                <a class="avatar mr-2 flex-shrink-0" href="http://localhost:1313/">
+                  <img class=" avatar-user"
+                    src="/images/avatar.png"
+                    width="32" height="32"></a>
+              </div>
+              <div class="d-flex flex-column">
+                <h1 class="break-word f3 text-normal mb-md-0 mb-1">
+                  <span class="author">
+                    <a href="http://localhost:1313/">Hueihuea</a>
+                  </span>
+                  <span class="path-divider">/</span>
+                  <strong class="css-truncate css-truncate-target mr-1" style="max-width: 410px">
+                    <a href="http://localhost:1313/post/%E8%BE%B9%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%86%85%E5%A4%96%E6%A3%80%E6%B5%8B%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1/"></a>
+                  </strong>
+                </h1>
+                <div class="note m-0">
+                  Created <relative-time datetime="Mon, 01 Jan 0001 00:00:00 &#43;0000"
+                    class="no-wrap">
+                    Mon, 01 Jan 0001 00:00:00 &#43;0000</relative-time>
+
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-lg px-3 new-discussion-timeline">
+      <div class="repository-content gist-content">
+        <div>
+          <div class="js-gist-file-update-container js-task-list-container file-box">
+            <div id="file-pytest" class="file my-2">
+              <div id="post-header" class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style="z-index: 2">
+                <div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto">
+                  <div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0">
+                    
+                    <summary id="toc-toggle" onclick="clickToc()" class="btn btn-octicon m-0 mr-2 p-2">
+                      <svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered">
+                        <path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"></path>
+                      </svg>
+                    </summary>
+                    <details-menu class="SelectMenu" id="toc-details" style="display: none;">
+                      <div class="SelectMenu-modal rounded-3 mt-1" style="max-height: 340px;">
+                        <div class="SelectMenu-list SelectMenu-list--borderless p-2" style="overscroll-behavior: contain;" id="toc-list">
+                        </div>
+                      </div>
+                    </details-menu>
+                      741 Words
+                    
+
+                  </div>
+                  <div class="file-actions flex-order-2 pt-0">
+                    
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="Box-body px-5 pb-5" style="z-index: 1">
+                <article class="markdown-body entry-content container-lg"><p>基于上周对《重心计算》的学习，想到可以用有向面积设计内外检测函数。
+花费十分钟了解向量积定义后，注意到</p>
+<p>用一个$起点A$和一个$终点B$来构造一个$边向量\vec{AB}(x_1,y_1,z_1)$
+现有一个$点P$ 若想判断$点P$在$边向量\vec{AB}$的什么方向上
+只要先计算得$\vec{AP}(x_2,y_2,z_2)$,然后再计算$\vec{C}$
+$$
+\vec{C}=&amp;\vec{AB} \times \vec{AP}\
+\vec{C}=&amp;(y_1z_2-y_2z_1,x_2z_1-x_2z_1,x_1y_2-x_1y_2)\
+$$
+这样子就成功把$点P$和$边AB$的方向量化了</p>
+<p>学习内外检测函数知识并思考发现，如果用$\vec{AB},\vec{BC},\vec{CA}$来构造一个$\triangle{ABC}$，那么
+$$
+\because \vec{AB}\times\vec{AP},\vec{BC}\times\vec{BP},\vec{CA}\times\vec{CP}拥有相同的方向\
+结合SAT定理\
+\therefore P在\triangle{ABC}内部 \iff (\vec{AB}\times\vec{AP})\cdot(\vec{BC}\times\vec{BP})&gt;0且(\vec{AB}\times\vec{AP})\cdot(\vec{CA}\times\vec{CP})&gt;0\
+$$
+据此可以设计内外函数了。</p>
+<p>出于时间考虑，编码的思维过程来不及写了，直接贴出最后用上的代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * 三角形图元
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {vec3} pos1 三角形顶点1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {vec3} pos2 三角形顶点2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param {vec3} pos3 三角形顶点3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Primitive</span>(<span style="color:#a6e22e">pos1</span>, <span style="color:#a6e22e">pos2</span>, <span style="color:#a6e22e">pos3</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">calcNormal</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span> () {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v12</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos2</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v13</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos3</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">cross</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#a6e22e">v12</span>, <span style="color:#a6e22e">v13</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * 判断点是否在三角形内
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * 尽管可能有性能问题 但是为了语义清晰 使用面向对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param {*} vec 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">inside</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>) =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">vec</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">fromValues</span>(<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v12</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos2</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v23</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos3</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v31</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos1</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos3</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v1p</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#a6e22e">vec</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v2p</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#a6e22e">vec</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">v3p</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">sub</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#a6e22e">vec</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos3</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">cross1</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">cross</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#a6e22e">v12</span>, <span style="color:#a6e22e">v1p</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">cross2</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">cross</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#a6e22e">v23</span>, <span style="color:#a6e22e">v2p</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">cross3</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">cross</span>(<span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">create</span>(), <span style="color:#a6e22e">v31</span>, <span style="color:#a6e22e">v3p</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">dot</span>(<span style="color:#a6e22e">cross1</span>, <span style="color:#a6e22e">cross2</span>) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">vec3</span>.<span style="color:#a6e22e">dot</span>(<span style="color:#a6e22e">cross1</span>, <span style="color:#a6e22e">cross3</span>) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos1</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pos1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos2</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pos2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">pos3</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pos3</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">normal</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">calcNormal</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script type="application/javascript" src='http://localhost:1313/js/toc.js'></script>
+<link rel="stylesheet" href='http://localhost:1313/css/toc.css' />
+
+  
+<div class="comment-section">
+    <h3 class="comment-title">评论区</h3>
+    
+    
+    <div class="comment-form">
+        <form id="commentForm">
+            <div class="form-group">
+                <label for="commentUser">用户名:</label>
+                <input type="text" id="commentUser" name="user" placeholder="请输入您的用户名" maxlength="50" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="commentMsg">评论内容:</label>
+                <textarea id="commentMsg" name="msg" placeholder="请输入您的评论内容" maxlength="1000" required></textarea>
+            </div>
+            
+            <button type="submit">发表评论</button>
+        </form>
+        
+        <div id="commentResult"></div>
+    </div>
+    
+    
+    <div class="comments-list">
+        <h4 class="comments-title">评论列表</h4>
+        <div id="commentList">
+            <p class="loading-text">正在加载评论...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+
+function generateTitleHash(title) {
+    let hash = 0;
+    if (title.length === 0) return hash.toString();
+    for (let i = 0; i < title.length; i++) {
+        const char = title.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; 
+    }
+    return Math.abs(hash).toString();
+}
+
+
+const articleTitle = "";
+const categoryHash = generateTitleHash(articleTitle);
+const apiBaseUrl = "http:\/\/localhost:1066";
+
+console.log('文章标题:', articleTitle);
+console.log('分类Hash:', categoryHash);
+console.log('API基础URL:', apiBaseUrl);
+
+
+if (!apiBaseUrl || apiBaseUrl === '') {
+    console.error('评论系统API基础URL未配置');
+    document.getElementById('commentList').innerHTML = 
+        '<div style="color: red;">评论系统配置错误：API基础URL未设置</div>';
+}
+
+
+function validateInput(user, msg) {
+    const errors = [];
+    
+    
+    if (!user || user.trim().length === 0) {
+        errors.push('用户名不能为空');
+    } else if (user.length > 50) {
+        errors.push('用户名不能超过50个字符');
+    }
+    
+    
+    if (!msg || msg.trim().length === 0) {
+        errors.push('评论内容不能为空');
+    } else if (msg.length > 1000) {
+        errors.push('评论内容不能超过1000个字符');
+    }
+    
+    
+    const dangerousPatterns = [
+        /\x3Cscript/i,
+        /javascript:/i,
+        /on\w+\s*=/i,
+        /<iframe/i,
+        /<object/i,
+        /<embed/i
+    ];
+    
+    const allText = user + msg;
+    for (const pattern of dangerousPatterns) {
+        if (pattern.test(allText)) {
+            errors.push('输入内容包含不允许的字符');
+            break;
+        }
+    }
+    
+    return errors;
+}
+
+
+document.getElementById('commentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log('评论表单提交事件触发');
+    
+    const user = document.getElementById('commentUser').value.trim();
+    const msg = document.getElementById('commentMsg').value.trim();
+    
+    
+    const validationErrors = validateInput(user, msg);
+    if (validationErrors.length > 0) {
+        document.getElementById('commentResult').innerHTML = 
+            '<div class="error">' + validationErrors.join('<br>') + '</div>';
+        return;
+    }
+    
+    const formData = new FormData(this);
+    formData.append('cate', categoryHash); 
+    
+    console.log('FormData 创建成功，分类:', categoryHash);
+    
+    fetch(apiBaseUrl + '/msg', {
+        method: 'POST',
+        body: formData,
+        mode: 'cors',
+        credentials: 'omit'
+    })
+    .then(response => {
+        console.log('响应状态:', response.status);
+        return response.text();
+    })
+    .then(data => {
+        console.log('响应数据:', data);
+        document.getElementById('commentResult').innerHTML = 
+            '<div style="color: green; margin-top: 10px;">' + data + '</div>';
+        
+        this.reset();
+        
+        loadComments();
+    })
+    .catch(error => {
+        console.error('发送错误:', error);
+        let errorMsg = '发送失败: ' + error;
+        if (error.name === 'TypeError' && error.message.includes('CORS')) {
+            errorMsg = '跨域请求被阻止，请检查后端CORS配置或使用代理';
+        }
+        document.getElementById('commentResult').innerHTML = 
+            '<div style="color: red; margin-top: 10px;">' + errorMsg + '</div>';
+    });
+});
+
+
+function loadComments() {
+    console.log('loadComments 函数被调用，分类:', categoryHash);
+    
+    fetch(apiBaseUrl + '/list?cate=' + encodeURIComponent(categoryHash), {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit'
+    })
+    .then(response => {
+        console.log('获取响应状态:', response.status);
+        return response.text();
+    })
+    .then(data => {
+        console.log('获取响应数据:', data);
+        try {
+            const messages = JSON.parse(data);
+            console.log('解析成功:', messages);
+            displayComments(messages);
+        } catch (error) {
+            console.error('JSON解析错误:', error);
+            document.getElementById('commentList').innerHTML = 
+                '<div style="color: red;">加载失败: ' + error + '</div>';
+        }
+    })
+    .catch(error => {
+        console.error('获取错误:', error);
+        let errorMsg = '加载失败: ' + error;
+        if (error.name === 'TypeError' && error.message.includes('CORS')) {
+            errorMsg = '跨域请求被阻止，请检查后端CORS配置或使用代理';
+        }
+        document.getElementById('commentList').innerHTML = 
+            '<div style="color: red;">' + errorMsg + '</div>';
+    });
+}
+
+
+function displayComments(messages) {
+    console.log('displayComments 被调用，数据:', messages);
+    const commentList = document.getElementById('commentList');
+    
+    if (!messages.Msgs || messages.Msgs.length === 0) {
+        console.log('没有评论');
+        commentList.innerHTML = '<p class="no-comments">暂无评论，快来抢沙发吧！</p>';
+        return;
+    }
+    
+    console.log('评论数量:', messages.Msgs.length);
+    let html = '';
+    
+    
+    const sortedMessages = messages.Msgs.sort((a, b) => {
+        
+        return new Date(b.Time) - new Date(a.Time);
+    });
+    
+    sortedMessages.forEach(msg => {
+        console.log('处理评论:', msg);
+        
+        const safeUser = escapeHtml(msg.User || '匿名用户');
+        const safeTime = escapeHtml(msg.Time || '');
+        const safeMsg = escapeHtml(msg.Msg || '');
+        const safeIP = escapeHtml(msg.IP || '');
+        
+        html += `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-user">${safeUser}</span>
+                    <span class="comment-time">${safeTime}</span>
+                </div>
+                <div class="comment-content">${safeMsg}</div>
+                <div class="comment-meta">IP: ${safeIP}</div>
+            </div>
+        `;
+    });
+    
+    console.log('生成的HTML:', html);
+    commentList.innerHTML = html;
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('页面加载完成，开始加载评论');
+    loadComments();
+});
+</script>
+
+<style>
+ 
+.comment-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+ 
+[data-color-mode=dark] .comment-section {
+    background-color: #21262d;
+    border: 1px solid #30363d;
+}
+
+.comment-title {
+    color: #24292f;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #d0d7de;
+    padding-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+[data-color-mode=dark] .comment-title {
+    color: #f0f6fc;
+    border-bottom-color: #30363d;
+}
+
+ 
+.comment-form {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #24292f;
+}
+
+[data-color-mode=dark] .form-group label {
+    color: #f0f6fc;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #24292f;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[data-color-mode=dark] .form-group input,
+[data-color-mode=dark] .form-group textarea {
+    background-color: #0d1117;
+    border-color: #30363d;
+    color: #f0f6fc;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0969da;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+}
+
+[data-color-mode=dark] .form-group input:focus,
+[data-color-mode=dark] .form-group textarea:focus {
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
+}
+
+.form-group textarea {
+    height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+button[type="submit"] {
+    background-color: #24292f;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+[data-color-mode=dark] button[type="submit"] {
+    background-color: #f0f6fc;
+    color: #24292f;
+}
+
+button[type="submit"]:hover {
+    background-color: #1a1e22;
+}
+
+[data-color-mode=dark] button[type="submit"]:hover {
+    background-color: #e6edf0;
+}
+
+ 
+.comments-title {
+    color: #24292f;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+[data-color-mode=dark] .comments-title {
+    color: #f0f6fc;
+}
+
+.loading-text,
+.no-comments {
+    color: #656d76;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+[data-color-mode=dark] .loading-text,
+[data-color-mode=dark] .no-comments {
+    color: #8b949e;
+}
+
+ 
+.comment-item {
+    background-color: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+[data-color-mode=dark] .comment-item {
+    background-color: #0d1117;
+    border-color: #30363d;
+}
+
+.comment-item:hover {
+    border-color: #0969da;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-color-mode=dark] .comment-item:hover {
+    border-color: #1f6feb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment-user {
+    font-weight: 600;
+    color: #24292f;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] .comment-user {
+    color: #f0f6fc;
+}
+
+.comment-time {
+    font-size: 12px;
+    color: #656d76;
+}
+
+[data-color-mode=dark] .comment-time {
+    color: #8b949e;
+}
+
+.comment-content {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #24292f;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] .comment-content {
+    color: #f0f6fc;
+}
+
+.comment-meta {
+    font-size: 11px;
+    color: #656d76;
+    border-top: 1px solid #d0d7de;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+[data-color-mode=dark] .comment-meta {
+    color: #8b949e;
+    border-top-color: #30363d;
+}
+
+ 
+#commentResult {
+    margin-top: 10px;
+}
+
+#commentResult .success {
+    color: #1a7f37;
+    background-color: #dafbe1;
+    border: 1px solid #a2dfa7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] #commentResult .success {
+    color: #7ee787;
+    background-color: #033a16;
+    border-color: #238636;
+}
+
+#commentResult .error {
+    color: #cf222e;
+    background-color: #ffebe9;
+    border: 1px solid #ffc1cc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] #commentResult .error {
+    color: #f85149;
+    background-color: #67060c;
+    border-color: #da3633;
+}
+
+ 
+@media (max-width: 768px) {
+    .comment-section {
+        margin: 20px 10px;
+        padding: 15px;
+        max-width: none;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .comment-time {
+        font-size: 11px;
+    }
+}
+</style>
+
+
+</div>
+
+  <div class="footer container-xl width-full p-responsive">
+  <div
+    class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light ">
+    <a aria-label="Homepage" title="GitHub" class="footer-octicon d-none d-lg-block mr-lg-4" href="http://localhost:1313/">
+      <svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="24">
+        <path fill-rule="evenodd"
+          d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+        </path>
+      </svg>
+    </a>
+    <ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0">
+      
+      <li class="mr-3 mr-lg-0">Theme by <a href='https://github.com/MeiK2333/github-style'>github-style</a></li>
+      
+      <li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href="https://github.com/">GitHub, Inc.</a></li>
+    </ul>
+  </div>
+  <div class="d-flex flex-justify-center pb-6">
+    <span class="f6 text-gray-light"></span>
+  </div>
+
+
+</div>
+
+</body>
+
+<script type="application/javascript" src="http://localhost:1313/js/github-style.js"></script>
+
+
+
+
+
+
+
+</html>

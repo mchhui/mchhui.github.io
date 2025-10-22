@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="application/javascript" src='http://localhost:1313/js/theme-mode.js'></script>
+    <link rel="stylesheet" href='http://localhost:1313/css/frameworks.min.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/github.min.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/github-style.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/light.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/dark.css' />
+    <link rel="stylesheet" href='http://localhost:1313/css/syntax.css' />
+    <title> - Hueihuea&#39;s blog | Welcome back, Pilot.</title>
+    
+    <link rel="icon" type="image/x-icon" href='/images/ico.png'>
+    
+    <meta name="theme-color" content="#1e2327">
+
+    
+    
+
+    
+    <meta name="description"
+  content="命题1：如果A-&gt;B有最短路P 而C属于P 那么A-&gt;C的最短路包含于P 易证:假如P中A-&gt;C不是最短路 那么一定存在P`使得A-&gt;C更短 那么A-&gt;C&#43;C-&gt;B短于P 这与前提P是A-&gt;B的最短路矛盾,故原命题成立。 这其实就是迪杰斯特拉的最优子结构性质。
+命题2： 如果P:A-&gt;B中所有中间点Mx都满足A-&gt;Mx最短 那么P最短 这个命题是错误的，关键在于 缺乏对最后一个中间点到P的距离的考虑。该命题显然不足以支持迪杰斯特拉算法的正确性。
+迪杰斯特拉的基本原理： 令起点为O 终点为F 中间顶点记作Pn 维护俩个数组S和U S代表已经访问的顶点 U代表仍未访问的顶点 每个顶点包含以下属性 -list 记录相邻顶点以及俩点之间的距离（由用户输入） -distance 记录到O的最短距离（由程序计算）
+第一步：初始化
+将O放入U distance设为0 其他顶点全放入U 这些顶点中 如果顶点与O相连 distance设为俩点间的距离 否则 distance全设为无穷大
+第二步：更新 从U中选取distance最小的顶点Px放入S 并把所有与Px相连的顶点Px的distance设为f$$f = min(Px的distance&#43;Px与Px的距离,Px`的distance) $$ 这里有一个性质：初始化后的算法运行过程中，已经放入S的顶点的distance不会再变小，即，一旦我们把顶点Px放入S，代表我们已经找到了O-&gt;Px的最短路径。 证明：Px的distance就是Px到O的最短距离。
+蓝色顶点：Px 绿色顶点：S中与Px相连的顶点 红色顶点：U中与Px相连的顶点
+​	由于，每个绿色顶点都与Px进行过“distance设为f”的运算，所以能保证：如果中间点只有来自S的顶点，Px的distance就是Px到O的最短距离，我们把该路径记作P。 同时，不可能有一条更短的S外的顶点（不含Px）的路径P` ，现在我们来证明这一点： ​	假设有一条经过S外的顶点（不含Px）的O到Px的最短路径P`，那么一定有顶点y满足：
+1.y属于S。 2.y与某S中顶点Ps相连。 3.y不是Px。（再次强调） 4.y在满足以上条件的顶点中distance最小
+​	由操作规程，显然，此刻有y的distance&gt;=Px的distance。 ​	显然P`的长度大于P的长度。 ​	但这只是这一时刻，我们还应该证明，直到算法完成，都有y的distance&gt;=Px的distance。 ​	如果y的distance想要变小，那就必须有另一条路连上他，例如：
+" />
+<meta name="keywords"
+  content='我的世界,minecraft,编程,计算,图形学,渲染,算法,证明' />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="http://localhost:1313/post/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E8%BF%AA%E6%9D%B0%E6%96%AF%E7%89%B9%E6%8B%89%E6%9C%80%E7%9F%AD%E8%B7%AF%E7%AE%97%E6%B3%95/" />
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content=" - Hueihuea&#39;s blog | Welcome back, Pilot." />
+<meta name="twitter:description"
+  content="命题1：如果A-&gt;B有最短路P 而C属于P 那么A-&gt;C的最短路包含于P 易证:假如P中A-&gt;C不是最短路 那么一定存在P`使得A-&gt;C更短 那么A-&gt;C&#43;C-&gt;B短于P 这与前提P是A-&gt;B的最短路矛盾,故原命题成立。 这其实就是迪杰斯特拉的最优子结构性质。
+命题2： 如果P:A-&gt;B中所有中间点Mx都满足A-&gt;Mx最短 那么P最短 这个命题是错误的，关键在于 缺乏对最后一个中间点到P的距离的考虑。该命题显然不足以支持迪杰斯特拉算法的正确性。
+迪杰斯特拉的基本原理： 令起点为O 终点为F 中间顶点记作Pn 维护俩个数组S和U S代表已经访问的顶点 U代表仍未访问的顶点 每个顶点包含以下属性 -list 记录相邻顶点以及俩点之间的距离（由用户输入） -distance 记录到O的最短距离（由程序计算）
+第一步：初始化
+将O放入U distance设为0 其他顶点全放入U 这些顶点中 如果顶点与O相连 distance设为俩点间的距离 否则 distance全设为无穷大
+第二步：更新 从U中选取distance最小的顶点Px放入S 并把所有与Px相连的顶点Px的distance设为f$$f = min(Px的distance&#43;Px与Px的距离,Px`的distance) $$ 这里有一个性质：初始化后的算法运行过程中，已经放入S的顶点的distance不会再变小，即，一旦我们把顶点Px放入S，代表我们已经找到了O-&gt;Px的最短路径。 证明：Px的distance就是Px到O的最短距离。
+蓝色顶点：Px 绿色顶点：S中与Px相连的顶点 红色顶点：U中与Px相连的顶点
+​	由于，每个绿色顶点都与Px进行过“distance设为f”的运算，所以能保证：如果中间点只有来自S的顶点，Px的distance就是Px到O的最短距离，我们把该路径记作P。 同时，不可能有一条更短的S外的顶点（不含Px）的路径P` ，现在我们来证明这一点： ​	假设有一条经过S外的顶点（不含Px）的O到Px的最短路径P`，那么一定有顶点y满足：
+1.y属于S。 2.y与某S中顶点Ps相连。 3.y不是Px。（再次强调） 4.y在满足以上条件的顶点中distance最小
+​	由操作规程，显然，此刻有y的distance&gt;=Px的distance。 ​	显然P`的长度大于P的长度。 ​	但这只是这一时刻，我们还应该证明，直到算法完成，都有y的distance&gt;=Px的distance。 ​	如果y的distance想要变小，那就必须有另一条路连上他，例如：
+" />
+<meta name="twitter:site" content="http://localhost:1313/" />
+<meta name="twitter:creator" content="" />
+<meta name="twitter:image"
+  content="http://localhost:1313/">
+
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content=" - Hueihuea&#39;s blog | Welcome back, Pilot.">
+<meta property="og:description"
+  content="命题1：如果A-&gt;B有最短路P 而C属于P 那么A-&gt;C的最短路包含于P 易证:假如P中A-&gt;C不是最短路 那么一定存在P`使得A-&gt;C更短 那么A-&gt;C&#43;C-&gt;B短于P 这与前提P是A-&gt;B的最短路矛盾,故原命题成立。 这其实就是迪杰斯特拉的最优子结构性质。
+命题2： 如果P:A-&gt;B中所有中间点Mx都满足A-&gt;Mx最短 那么P最短 这个命题是错误的，关键在于 缺乏对最后一个中间点到P的距离的考虑。该命题显然不足以支持迪杰斯特拉算法的正确性。
+迪杰斯特拉的基本原理： 令起点为O 终点为F 中间顶点记作Pn 维护俩个数组S和U S代表已经访问的顶点 U代表仍未访问的顶点 每个顶点包含以下属性 -list 记录相邻顶点以及俩点之间的距离（由用户输入） -distance 记录到O的最短距离（由程序计算）
+第一步：初始化
+将O放入U distance设为0 其他顶点全放入U 这些顶点中 如果顶点与O相连 distance设为俩点间的距离 否则 distance全设为无穷大
+第二步：更新 从U中选取distance最小的顶点Px放入S 并把所有与Px相连的顶点Px的distance设为f$$f = min(Px的distance&#43;Px与Px的距离,Px`的distance) $$ 这里有一个性质：初始化后的算法运行过程中，已经放入S的顶点的distance不会再变小，即，一旦我们把顶点Px放入S，代表我们已经找到了O-&gt;Px的最短路径。 证明：Px的distance就是Px到O的最短距离。
+蓝色顶点：Px 绿色顶点：S中与Px相连的顶点 红色顶点：U中与Px相连的顶点
+​	由于，每个绿色顶点都与Px进行过“distance设为f”的运算，所以能保证：如果中间点只有来自S的顶点，Px的distance就是Px到O的最短距离，我们把该路径记作P。 同时，不可能有一条更短的S外的顶点（不含Px）的路径P` ，现在我们来证明这一点： ​	假设有一条经过S外的顶点（不含Px）的O到Px的最短路径P`，那么一定有顶点y满足：
+1.y属于S。 2.y与某S中顶点Ps相连。 3.y不是Px。（再次强调） 4.y在满足以上条件的顶点中distance最小
+​	由操作规程，显然，此刻有y的distance&gt;=Px的distance。 ​	显然P`的长度大于P的长度。 ​	但这只是这一时刻，我们还应该证明，直到算法完成，都有y的distance&gt;=Px的distance。 ​	如果y的distance想要变小，那就必须有另一条路连上他，例如：
+" />
+<meta property="og:url" content="http://localhost:1313/post/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E8%BF%AA%E6%9D%B0%E6%96%AF%E7%89%B9%E6%8B%89%E6%9C%80%E7%9F%AD%E8%B7%AF%E7%AE%97%E6%B3%95/" />
+<meta property="og:site_name" content="" />
+<meta property="og:image"
+  content="http://localhost:1313/">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+<body>
+  <div style="position: relative">
+  <header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on">
+    <div class="Header-item mobile-none" style="margin-top: -4px; margin-bottom: -4px;">
+      <a class="Header-link" href="http://localhost:1313/">
+        <img class="octicon" height="32" width="32" src="/images/github-mark-white.png">
+      </a>
+    </div>
+    <div class="Header-item d-md-none">
+      <button class="Header-link btn-link js-details-target" type="button"
+        onclick="document.querySelector('#header-search').style.display = document.querySelector('#header-search').style.display == 'none'? 'block': 'none'">
+        <svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" version="1.1" width="24">
+          <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 7.75zM1.75 12a.75.75 0 100 1.5h12.5a.75.75 0 100-1.5H1.75z">
+          </path>
+        </svg>
+      </button>
+    </div>
+    <div style="display: none;" id="header-search"
+      class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex">
+      <div
+        class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to">
+        <div class="position-relative">
+          
+          <form target="_blank" action="https://www.baidu.com/s" accept-charset="UTF-8" method="get"
+            autocomplete="off">
+            <label
+              class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center">
+              <input type="text"
+                class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable"
+                name="wd" value="" placeholder="Search" autocomplete="off">
+              <input type="hidden" name="si" value="site:http://localhost:1313/">
+            </label>
+          </form>
+          
+        </div>
+      </div>
+    </div>
+
+    <div class="Header-item Header-item--full flex-justify-center d-md-none position-relative">
+      <a class="Header-link " href="http://localhost:1313/">
+        <img class="octicon octicon-mark-github v-align-middle" height="32" width="32" src="/images/github-mark-white.png">
+      </a>
+    </div>
+    <div class="Header-item" style="margin-right: 0;">
+      <a href="javascript:void(0)" class="Header-link no-select" onclick="switchTheme()">
+        <svg style="fill: var(--color-profile-color-modes-toggle-moon);" class="no-select" viewBox="0 0 16 16"
+          version="1.1" width="16" height="16">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M4.52208 7.71754C7.5782 7.71754 10.0557 5.24006 10.0557 2.18394C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961C9.95801 1.07727 10.3495 0.771159 10.6474 0.99992C12.1153 2.12716 13.0615 3.89999 13.0615 5.89383C13.0615 9.29958 10.3006 12.0605 6.89485 12.0605C3.95334 12.0605 1.49286 10.001 0.876728 7.24527C0.794841 6.87902 1.23668 6.65289 1.55321 6.85451C2.41106 7.40095 3.4296 7.71754 4.52208 7.71754Z">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </header>
+</div>
+  <div id="search-result" class="container-lg px-3 new-discussion-timeline" style="display: none;">
+</div>
+
+  
+<div class="application-main">
+  <div>
+  <main>
+    <div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4">
+      <div class="px-0">
+        <div class="mb-3 d-flex px-3 px-md-3 px-lg-5">
+          <div class="flex-auto min-width-0 width-fit mr-3">
+            <div class="d-flex">
+              <div class="d-none d-md-block">
+                <a class="avatar mr-2 flex-shrink-0" href="http://localhost:1313/">
+                  <img class=" avatar-user"
+                    src="/images/avatar.png"
+                    width="32" height="32"></a>
+              </div>
+              <div class="d-flex flex-column">
+                <h1 class="break-word f3 text-normal mb-md-0 mb-1">
+                  <span class="author">
+                    <a href="http://localhost:1313/">Hueihuea</a>
+                  </span>
+                  <span class="path-divider">/</span>
+                  <strong class="css-truncate css-truncate-target mr-1" style="max-width: 410px">
+                    <a href="http://localhost:1313/post/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E8%BF%AA%E6%9D%B0%E6%96%AF%E7%89%B9%E6%8B%89%E6%9C%80%E7%9F%AD%E8%B7%AF%E7%AE%97%E6%B3%95/"></a>
+                  </strong>
+                </h1>
+                <div class="note m-0">
+                  Created <relative-time datetime="Mon, 01 Jan 0001 00:00:00 &#43;0000"
+                    class="no-wrap">
+                    Mon, 01 Jan 0001 00:00:00 &#43;0000</relative-time>
+
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-lg px-3 new-discussion-timeline">
+      <div class="repository-content gist-content">
+        <div>
+          <div class="js-gist-file-update-container js-task-list-container file-box">
+            <div id="file-pytest" class="file my-2">
+              <div id="post-header" class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style="z-index: 2">
+                <div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto">
+                  <div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0">
+                    
+                    <summary id="toc-toggle" onclick="clickToc()" class="btn btn-octicon m-0 mr-2 p-2">
+                      <svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered">
+                        <path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"></path>
+                      </svg>
+                    </summary>
+                    <details-menu class="SelectMenu" id="toc-details" style="display: none;">
+                      <div class="SelectMenu-modal rounded-3 mt-1" style="max-height: 340px;">
+                        <div class="SelectMenu-list SelectMenu-list--borderless p-2" style="overscroll-behavior: contain;" id="toc-list">
+                        </div>
+                      </div>
+                    </details-menu>
+                      1516 Words
+                    
+
+                  </div>
+                  <div class="file-actions flex-order-2 pt-0">
+                    
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="Box-body px-5 pb-5" style="z-index: 1">
+                <article class="markdown-body entry-content container-lg"><h3 id="命题1如果a-b有最短路p-而c属于p-那么a-c的最短路包含于p">命题1：如果A-&gt;B有最短路P 而C属于P 那么A-&gt;C的最短路包含于P</h3>
+<p>易证:假如P中A-&gt;C不是最短路 那么一定存在P`使得A-&gt;C更短 那么A-&gt;C+C-&gt;B短于P 这与前提P是A-&gt;B的最短路矛盾,故原命题成立。 这其实就是迪杰斯特拉的最优子结构性质。</p>
+<h3 id="命题2-如果pa-b中所有中间点mx都满足a-mx最短-那么p最短">命题2： 如果P:A-&gt;B中所有中间点Mx都满足A-&gt;Mx最短 那么P最短</h3>
+<p>这个命题是错误的，关键在于 缺乏对最后一个中间点到P的距离的考虑。该命题显然不足以支持迪杰斯特拉算法的正确性。</p>
+<h3 id="迪杰斯特拉的基本原理">迪杰斯特拉的基本原理：</h3>
+<p>令起点为O 终点为F 中间顶点记作Pn
+维护俩个数组S和U
+S代表已经访问的顶点
+U代表仍未访问的顶点
+每个顶点包含以下属性
+-list 记录相邻顶点以及俩点之间的距离（由用户输入）
+-distance 记录到O的最短距离（由程序计算）</p>
+<p><strong>第一步：初始化</strong></p>
+<p>将O放入U distance设为0 其他顶点全放入U 这些顶点中 如果顶点与O相连 distance设为俩点间的距离 否则 distance全设为无穷大</p>
+<p><strong>第二步：更新</strong>
+从U中选取distance最小的顶点Px放入S 并把所有与Px相连的顶点Px<code>的distance设为f $$ f = min(Px的distance+Px与Px</code>的距离,Px`的distance)
+$$
+这里有一个性质：初始化后的算法运行过程中，已经放入S的顶点的distance不会再变小，即，一旦我们把顶点Px放入S，代表我们已经找到了O-&gt;Px的最短路径。
+证明：Px的distance就是Px到O的最短距离。</p>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>蓝色顶点：Px
+绿色顶点：S中与Px相连的顶点
+红色顶点：U中与Px相连的顶点</p>
+</blockquote>
+<p>​	由于，每个绿色顶点都与Px进行过“distance设为f”的运算，所以能保证：如果中间点只有来自S的顶点，Px的distance就是Px到O的最短距离，我们把该路径记作P。
+同时，不可能有一条更短的S外的顶点（不含Px）的路径P` ，现在我们来证明这一点：
+​	假设有一条经过S外的顶点（不含Px）的O到Px的最短路径P`，那么一定有顶点y满足：</p>
+<blockquote>
+<p>1.y属于S。
+2.y与某S中顶点Ps相连。
+3.y不是Px。（再次强调）
+4.y在满足以上条件的顶点中distance最小</p>
+</blockquote>
+<p>​	由操作规程，显然，此刻有y的distance&gt;=Px的distance。
+​	显然P`的长度大于P的长度。
+​	但这只是这一时刻，我们还应该证明，直到算法完成，都有y的distance&gt;=Px的distance。
+​	如果y的distance想要变小，那就必须有另一条路连上他，例如：</p>
+<!-- raw HTML omitted -->
+<p>​	但是，显然，如果distance能靠另一条路变小，他就不满足“4.y在满足以上条件的顶点中distance最小”。
+​	因此，直到算法完成，都有y的distance&gt;=Px的distance。
+​	引入一个更正式的概念：循环不变量</p>
+<blockquote>
+<p><strong>循环不变量</strong>是在算法循环的<strong>开始、每次迭代后、以及循环结束时</strong>都保持为真（成立）的一个条件或性质。</p>
+<p>你可以把它想象成算法循环中一个<strong>永恒的真理</strong>。无论循环执行了多少次，这个真理始终不变。我们通过证明这个真理在循环之初成立，并且每次循环都保持成立，来最终证明算法结束时得到了正确的结果。</p>
+</blockquote>
+<p>​	那么，我们目前知道了，迪杰斯特拉有俩个关键的循环不变量:
+​	1被选入S的Px的distance就是Px到O的最短距离。
+​	2.迭代过程中，U中Px的distance不会被更新成小于当前S中最大的distance</p>
+<p><strong>第三步:重复更新，直到得出结果</strong></p>
+<p>显然，在上述原理中，我们只能得到O到F的最短距离，如果要得到路径，只要在计算f的时候，记录提供最小值的父顶点就行。</p>
+<p>显然，负权边会导致循环不变量1和2都失效，迪杰斯特拉正确性随之失效。</p>
+<p>显然，迪杰斯特拉不能找到所有最短路径。</p>
+</article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script type="application/javascript" src='http://localhost:1313/js/toc.js'></script>
+<link rel="stylesheet" href='http://localhost:1313/css/toc.css' />
+
+  
+<div class="comment-section">
+    <h3 class="comment-title">评论区</h3>
+    
+    
+    <div class="comment-form">
+        <form id="commentForm">
+            <div class="form-group">
+                <label for="commentUser">用户名:</label>
+                <input type="text" id="commentUser" name="user" placeholder="请输入您的用户名" maxlength="50" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="commentMsg">评论内容:</label>
+                <textarea id="commentMsg" name="msg" placeholder="请输入您的评论内容" maxlength="1000" required></textarea>
+            </div>
+            
+            <button type="submit">发表评论</button>
+        </form>
+        
+        <div id="commentResult"></div>
+    </div>
+    
+    
+    <div class="comments-list">
+        <h4 class="comments-title">评论列表</h4>
+        <div id="commentList">
+            <p class="loading-text">正在加载评论...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+
+function generateTitleHash(title) {
+    let hash = 0;
+    if (title.length === 0) return hash.toString();
+    for (let i = 0; i < title.length; i++) {
+        const char = title.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; 
+    }
+    return Math.abs(hash).toString();
+}
+
+
+const articleTitle = "";
+const categoryHash = generateTitleHash(articleTitle);
+const apiBaseUrl = "http:\/\/localhost:1066";
+
+console.log('文章标题:', articleTitle);
+console.log('分类Hash:', categoryHash);
+console.log('API基础URL:', apiBaseUrl);
+
+
+if (!apiBaseUrl || apiBaseUrl === '') {
+    console.error('评论系统API基础URL未配置');
+    document.getElementById('commentList').innerHTML = 
+        '<div style="color: red;">评论系统配置错误：API基础URL未设置</div>';
+}
+
+
+function validateInput(user, msg) {
+    const errors = [];
+    
+    
+    if (!user || user.trim().length === 0) {
+        errors.push('用户名不能为空');
+    } else if (user.length > 50) {
+        errors.push('用户名不能超过50个字符');
+    }
+    
+    
+    if (!msg || msg.trim().length === 0) {
+        errors.push('评论内容不能为空');
+    } else if (msg.length > 1000) {
+        errors.push('评论内容不能超过1000个字符');
+    }
+    
+    
+    const dangerousPatterns = [
+        /\x3Cscript/i,
+        /javascript:/i,
+        /on\w+\s*=/i,
+        /<iframe/i,
+        /<object/i,
+        /<embed/i
+    ];
+    
+    const allText = user + msg;
+    for (const pattern of dangerousPatterns) {
+        if (pattern.test(allText)) {
+            errors.push('输入内容包含不允许的字符');
+            break;
+        }
+    }
+    
+    return errors;
+}
+
+
+document.getElementById('commentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log('评论表单提交事件触发');
+    
+    const user = document.getElementById('commentUser').value.trim();
+    const msg = document.getElementById('commentMsg').value.trim();
+    
+    
+    const validationErrors = validateInput(user, msg);
+    if (validationErrors.length > 0) {
+        document.getElementById('commentResult').innerHTML = 
+            '<div class="error">' + validationErrors.join('<br>') + '</div>';
+        return;
+    }
+    
+    const formData = new FormData(this);
+    formData.append('cate', categoryHash); 
+    
+    console.log('FormData 创建成功，分类:', categoryHash);
+    
+    fetch(apiBaseUrl + '/msg', {
+        method: 'POST',
+        body: formData,
+        mode: 'cors',
+        credentials: 'omit'
+    })
+    .then(response => {
+        console.log('响应状态:', response.status);
+        return response.text();
+    })
+    .then(data => {
+        console.log('响应数据:', data);
+        document.getElementById('commentResult').innerHTML = 
+            '<div style="color: green; margin-top: 10px;">' + data + '</div>';
+        
+        this.reset();
+        
+        loadComments();
+    })
+    .catch(error => {
+        console.error('发送错误:', error);
+        let errorMsg = '发送失败: ' + error;
+        if (error.name === 'TypeError' && error.message.includes('CORS')) {
+            errorMsg = '跨域请求被阻止，请检查后端CORS配置或使用代理';
+        }
+        document.getElementById('commentResult').innerHTML = 
+            '<div style="color: red; margin-top: 10px;">' + errorMsg + '</div>';
+    });
+});
+
+
+function loadComments() {
+    console.log('loadComments 函数被调用，分类:', categoryHash);
+    
+    fetch(apiBaseUrl + '/list?cate=' + encodeURIComponent(categoryHash), {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit'
+    })
+    .then(response => {
+        console.log('获取响应状态:', response.status);
+        return response.text();
+    })
+    .then(data => {
+        console.log('获取响应数据:', data);
+        try {
+            const messages = JSON.parse(data);
+            console.log('解析成功:', messages);
+            displayComments(messages);
+        } catch (error) {
+            console.error('JSON解析错误:', error);
+            document.getElementById('commentList').innerHTML = 
+                '<div style="color: red;">加载失败: ' + error + '</div>';
+        }
+    })
+    .catch(error => {
+        console.error('获取错误:', error);
+        let errorMsg = '加载失败: ' + error;
+        if (error.name === 'TypeError' && error.message.includes('CORS')) {
+            errorMsg = '跨域请求被阻止，请检查后端CORS配置或使用代理';
+        }
+        document.getElementById('commentList').innerHTML = 
+            '<div style="color: red;">' + errorMsg + '</div>';
+    });
+}
+
+
+function displayComments(messages) {
+    console.log('displayComments 被调用，数据:', messages);
+    const commentList = document.getElementById('commentList');
+    
+    if (!messages.Msgs || messages.Msgs.length === 0) {
+        console.log('没有评论');
+        commentList.innerHTML = '<p class="no-comments">暂无评论，快来抢沙发吧！</p>';
+        return;
+    }
+    
+    console.log('评论数量:', messages.Msgs.length);
+    let html = '';
+    
+    
+    const sortedMessages = messages.Msgs.sort((a, b) => {
+        
+        return new Date(b.Time) - new Date(a.Time);
+    });
+    
+    sortedMessages.forEach(msg => {
+        console.log('处理评论:', msg);
+        
+        const safeUser = escapeHtml(msg.User || '匿名用户');
+        const safeTime = escapeHtml(msg.Time || '');
+        const safeMsg = escapeHtml(msg.Msg || '');
+        const safeIP = escapeHtml(msg.IP || '');
+        
+        html += `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-user">${safeUser}</span>
+                    <span class="comment-time">${safeTime}</span>
+                </div>
+                <div class="comment-content">${safeMsg}</div>
+                <div class="comment-meta">IP: ${safeIP}</div>
+            </div>
+        `;
+    });
+    
+    console.log('生成的HTML:', html);
+    commentList.innerHTML = html;
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('页面加载完成，开始加载评论');
+    loadComments();
+});
+</script>
+
+<style>
+ 
+.comment-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+ 
+[data-color-mode=dark] .comment-section {
+    background-color: #21262d;
+    border: 1px solid #30363d;
+}
+
+.comment-title {
+    color: #24292f;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #d0d7de;
+    padding-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+[data-color-mode=dark] .comment-title {
+    color: #f0f6fc;
+    border-bottom-color: #30363d;
+}
+
+ 
+.comment-form {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #24292f;
+}
+
+[data-color-mode=dark] .form-group label {
+    color: #f0f6fc;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #24292f;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[data-color-mode=dark] .form-group input,
+[data-color-mode=dark] .form-group textarea {
+    background-color: #0d1117;
+    border-color: #30363d;
+    color: #f0f6fc;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0969da;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+}
+
+[data-color-mode=dark] .form-group input:focus,
+[data-color-mode=dark] .form-group textarea:focus {
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
+}
+
+.form-group textarea {
+    height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+button[type="submit"] {
+    background-color: #24292f;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+[data-color-mode=dark] button[type="submit"] {
+    background-color: #f0f6fc;
+    color: #24292f;
+}
+
+button[type="submit"]:hover {
+    background-color: #1a1e22;
+}
+
+[data-color-mode=dark] button[type="submit"]:hover {
+    background-color: #e6edf0;
+}
+
+ 
+.comments-title {
+    color: #24292f;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+[data-color-mode=dark] .comments-title {
+    color: #f0f6fc;
+}
+
+.loading-text,
+.no-comments {
+    color: #656d76;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+[data-color-mode=dark] .loading-text,
+[data-color-mode=dark] .no-comments {
+    color: #8b949e;
+}
+
+ 
+.comment-item {
+    background-color: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+[data-color-mode=dark] .comment-item {
+    background-color: #0d1117;
+    border-color: #30363d;
+}
+
+.comment-item:hover {
+    border-color: #0969da;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-color-mode=dark] .comment-item:hover {
+    border-color: #1f6feb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment-user {
+    font-weight: 600;
+    color: #24292f;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] .comment-user {
+    color: #f0f6fc;
+}
+
+.comment-time {
+    font-size: 12px;
+    color: #656d76;
+}
+
+[data-color-mode=dark] .comment-time {
+    color: #8b949e;
+}
+
+.comment-content {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #24292f;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] .comment-content {
+    color: #f0f6fc;
+}
+
+.comment-meta {
+    font-size: 11px;
+    color: #656d76;
+    border-top: 1px solid #d0d7de;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+[data-color-mode=dark] .comment-meta {
+    color: #8b949e;
+    border-top-color: #30363d;
+}
+
+ 
+#commentResult {
+    margin-top: 10px;
+}
+
+#commentResult .success {
+    color: #1a7f37;
+    background-color: #dafbe1;
+    border: 1px solid #a2dfa7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] #commentResult .success {
+    color: #7ee787;
+    background-color: #033a16;
+    border-color: #238636;
+}
+
+#commentResult .error {
+    color: #cf222e;
+    background-color: #ffebe9;
+    border: 1px solid #ffc1cc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+[data-color-mode=dark] #commentResult .error {
+    color: #f85149;
+    background-color: #67060c;
+    border-color: #da3633;
+}
+
+ 
+@media (max-width: 768px) {
+    .comment-section {
+        margin: 20px 10px;
+        padding: 15px;
+        max-width: none;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .comment-time {
+        font-size: 11px;
+    }
+}
+</style>
+
+
+</div>
+
+  <div class="footer container-xl width-full p-responsive">
+  <div
+    class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light ">
+    <a aria-label="Homepage" title="GitHub" class="footer-octicon d-none d-lg-block mr-lg-4" href="http://localhost:1313/">
+      <svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="24">
+        <path fill-rule="evenodd"
+          d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+        </path>
+      </svg>
+    </a>
+    <ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0">
+      
+      <li class="mr-3 mr-lg-0">Theme by <a href='https://github.com/MeiK2333/github-style'>github-style</a></li>
+      
+      <li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href="https://github.com/">GitHub, Inc.</a></li>
+    </ul>
+  </div>
+  <div class="d-flex flex-justify-center pb-6">
+    <span class="f6 text-gray-light"></span>
+  </div>
+
+
+</div>
+
+</body>
+
+<script type="application/javascript" src="http://localhost:1313/js/github-style.js"></script>
+
+
+
+
+
+
+
+</html>
