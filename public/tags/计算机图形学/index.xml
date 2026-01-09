@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>计算机图形学 on Hueihuea&#39;s blog | Welcome back, Pilot.</title>
+    <link>http://localhost:1313/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/</link>
+    <description>Recent content in 计算机图形学 on Hueihuea&#39;s blog | Welcome back, Pilot.</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 09 Jan 2026 23:34:39 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>重心坐标的数学原理、计算方法与应用综述</title>
+      <link>http://localhost:1313/post/%E9%87%8D%E5%BF%83%E5%9D%90%E6%A0%87%E7%9A%84%E6%95%B0%E5%AD%A6%E5%8E%9F%E7%90%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E4%B8%8E%E5%BA%94%E7%94%A8%E7%BB%BC%E8%BF%B0/</link>
+      <pubDate>Fri, 09 Jan 2026 23:34:39 +0800</pubDate>
+      <guid>http://localhost:1313/post/%E9%87%8D%E5%BF%83%E5%9D%90%E6%A0%87%E7%9A%84%E6%95%B0%E5%AD%A6%E5%8E%9F%E7%90%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E4%B8%8E%E5%BA%94%E7%94%A8%E7%BB%BC%E8%BF%B0/</guid>
+      <description>&lt;ol&gt;&#xA;&lt;li&gt;总结重心坐标的设计思路，基本原理，并深入理解参数空间和几何空间的仿射映射关系 2. 与空间直角坐标系和局部斜坐标系对比，深入认识其优越性，并了解正性、光滑性、线性精度等性质项目的定性或定量表达。 3. 设计抽象函数论述有向面积法的正确性条件 4. 完成有向面积比法正确性证明 5. 推广到n维广义重心坐标系，从其在控制笼目标形变动画的应用切入以理解其实用价值，并在单纯形、一般凸、一般连通、一般图形方面做优良性质总结&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;</description>
+    </item>
+  </channel>
+</rss>

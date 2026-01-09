@@ -6,8 +6,15 @@
     <description>Recent content on Hueihuea&#39;s blog | Welcome back, Pilot.</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 23 Oct 2025 05:47:06 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 09 Jan 2026 23:34:39 +0800</lastBuildDate>
     <atom:link href="https://mchhui.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>重心坐标的数学原理、计算方法与应用综述</title>
+      <link>https://mchhui.github.io/post/%E9%87%8D%E5%BF%83%E5%9D%90%E6%A0%87%E7%9A%84%E6%95%B0%E5%AD%A6%E5%8E%9F%E7%90%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E4%B8%8E%E5%BA%94%E7%94%A8%E7%BB%BC%E8%BF%B0/</link>
+      <pubDate>Fri, 09 Jan 2026 23:34:39 +0800</pubDate>
+      <guid>https://mchhui.github.io/post/%E9%87%8D%E5%BF%83%E5%9D%90%E6%A0%87%E7%9A%84%E6%95%B0%E5%AD%A6%E5%8E%9F%E7%90%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E4%B8%8E%E5%BA%94%E7%94%A8%E7%BB%BC%E8%BF%B0/</guid>
+      <description>本文系统阐述了重心坐标的设计原理，通过建立参数空间与几何空间的仿射映射关系，实现了点对顶点坐标的加权表达。在与直角坐标系和局部斜坐标系的对比中，凸显了其在正性、光滑性和线性精度方面的优越性，并通过抽象函数和严格证明确立了有向面积法的正确性条件。最后将理论推广至n维广义重心坐标系，结合控制笼形变动画的应用实践，系统总结了其在单纯形、凸多面体及一般连通区域中的优良性质与适用边界。</description>
+    </item>
     <item>
       <title>边函数设计和内外检测函数设计</title>
       <link>https://mchhui.github.io/post/%E8%BE%B9%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%86%85%E5%A4%96%E6%A3%80%E6%B5%8B%E5%87%BD%E6%95%B0%E8%AE%BE%E8%AE%A1_/</link>
